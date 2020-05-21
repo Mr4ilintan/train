@@ -1,0 +1,29 @@
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+pycache
+node_modules
+instance.cfg
+script/initialize_project.sh
+.mypy_cache
+
+.idea/
+/venv/
+/bin/
+
+# creds
