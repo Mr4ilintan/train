@@ -26,4 +26,5 @@ script/initialize_project.sh
 /venv/
 /bin/
 
-# creds
+# parsing
+result.csv
