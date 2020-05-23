@@ -49,12 +49,11 @@ def parse_devto_developers():
         save_dev_to_csv(entity)
 
 
-
 if __name__ == "__main__":
-
+    # working on kekw
     response = requests.get("https://dev.to/api/articles?top=50")
     username_json = response.json()
-    usernaame = username_json[0].get("user").get('username')
-    links = requests.get(f'https://dev.to/{usernaame}')
+    usernaame = username_json[0].get("user").get("username")
+    links = requests.get(f"https://dev.to/{usernaame}")
 
     print(links)
