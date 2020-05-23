@@ -1,0 +1,18 @@
+name: Build and test
+
+on: [push]
+
+jobs:
+  Formatting:
+    runs-on: ubuntu-latest
+    name: Check Formatting
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Check formatting: black"
+        uses: lgeiger/black-action@master
+        with:
+          args: ". --check"
+      - name: "Lint: Flake8"
+        uses: cclauss/GitHub-Action-for-Flake8@v0.5.0
+      - name: "Type checks: mypy"
+        uses: jpetrucciani/mypy-check@master
