@@ -41,13 +41,20 @@ def parse_devto_developers():
         data = developer.get("user")
         print(data)
         entity: Developer = Developer(
-            full_name=data.get("name"),
-            username=data.get("username"),
-            github_url=data.get("github_username"),
+            full_name=data.get("name", ""),
+            username=data.get("username", ""),
+            github_url=data.get("github_username", ""),
         )
 
         save_dev_to_csv(entity)
 
 
+
 if __name__ == "__main__":
-    parse_devto_developers()
+
+    response = requests.get("https://dev.to/api/articles?top=50")
+    username_json = response.json()
+    usernaame = username_json[0].get("user").get('username')
+    links = requests.get(f'https://dev.to/{usernaame}')
+
+    print(links)
