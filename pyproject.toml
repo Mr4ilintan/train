@@ -8,6 +8,7 @@ authors = ["Kostik"]
 python = "^3.8"
 bs4 = "^0.0.1"
 pre-commit = "^2.4.0"
+lxml = "^4.5.1"
 
 [tool.poetry.dev-dependencies]
 
