@@ -31,6 +31,7 @@ def get_devto_profile_urls() -> List[Developer]:
             education="",
             joined="",
             work_status="",
+            # id=""
         )
         if username:
             partial_developer_data.append(developer_to_be_parsed)
