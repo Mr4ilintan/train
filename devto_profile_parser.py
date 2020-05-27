@@ -19,6 +19,7 @@ class Developer:
     username: Optional[str]
     github_username: Optional[str]
     profile_url: str
+    # id: Optional[int]
 
 
 def save_dev_to_csv(entity: Developer):
@@ -33,6 +34,7 @@ def save_dev_to_csv(entity: Developer):
             "full_name",
             "github_username",
             "profile_url",
+            # "id"
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -47,6 +49,7 @@ def save_dev_to_csv(entity: Developer):
                 "full_name": entity.full_name,
                 "github_username": entity.github_username,
                 "profile_url": entity.profile_url,
+                # "id": entity.id
             }
         )
 
@@ -63,6 +66,7 @@ def create_header():
             "full_name",
             "github_username",
             "profile_url",
+            # "id"
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
