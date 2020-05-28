@@ -1,9 +1,7 @@
 import csv
-import io
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Union
-
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 import requests
 
 
@@ -23,7 +21,7 @@ class Developer:
 
 
 def save_dev_to_csv(entity: Developer):
-    with io.open("devto_profiles.csv", "a", newline="", encoding="utf-8") as csvfile:
+    with open("devto_profiles.csv", "a", newline="") as csvfile:
         fieldnames = [
             "email",
             "work",
@@ -55,7 +53,7 @@ def save_dev_to_csv(entity: Developer):
 
 
 def create_header():
-    with io.open("devto_profiles.csv", "w", newline="", encoding="utf-8") as csvfile:
+    with open("devto_profiles.csv", "w", newline="") as csvfile:
         fieldnames = [
             "email",
             "work",

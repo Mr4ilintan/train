@@ -1,15 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional, List, Union
 
+
 import requests
-from bs4 import BeautifulSoup
 
-"""for ids in range(0, 15):
-    ids = ids+1
-
-code = requests.get(f'https://dev.to/api/users/{ids}')
-
-a = code.json()"""
 
 
 @dataclass
@@ -90,7 +84,6 @@ def get_profile_url() -> List[Everyone]:
     # def parse_devto_profiles(partial_developers: List[Everyone]):
 
 
-get_profile_url()
 
 
 """    for developer in partial_developers:

@@ -17,6 +17,7 @@ var/
 *.egg
 
 pycache
+__pycache__
 node_modules
 instance.cfg
 script/initialize_project.sh
@@ -28,3 +29,4 @@ script/initialize_project.sh
 
 # parsing
 result.csv
+devto_profiles.csv
