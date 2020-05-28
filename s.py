@@ -89,6 +89,7 @@ def get_profile_url() -> List[Everyone]:
 
     # def parse_devto_profiles(partial_developers: List[Everyone]):
 
+
 get_profile_url()
 
 
