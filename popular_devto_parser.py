@@ -1,7 +1,5 @@
 from typing import List
-
 import requests
-
 from devto_profile_parser import Developer
 
 
