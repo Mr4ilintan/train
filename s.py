@@ -11,6 +11,7 @@ code = requests.get(f'https://dev.to/api/users/{ids}')
 
 a = code.json()"""
 
+
 @dataclass
 class Everyone:
     id: int
@@ -86,15 +87,16 @@ def get_profile_url() -> List[Everyone]:
 
     return partial_dev_data
 
-#def parse_devto_profiles(partial_developers: List[Everyone]):
+    # def parse_devto_profiles(partial_developers: List[Everyone]):
 
-    get_profile_url()
+get_profile_url()
 
-'''    for developer in partial_developers:
+
+"""    for developer in partial_developers:
         profile_page = requests.get(developer.profile_url)
         soup = BeautifulSoup(profile_page.text, 'lxml')
 
         meta = soup.find_all('div',{'class': ['key', 'value']})
-        print[meta]'''
+        print[meta]"""
 
-#parse_devto_profiles()
+# parse_devto_profiles()
