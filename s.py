@@ -31,7 +31,12 @@ class Everyone:
 
 def get_profile_url() -> List[Everyone]:
 
-    code = requests.get(f"https://dev.to/api/users/1")
+    devto_profile_response = requests.get(f"https://dev.to/api/users/1")
+    
+    if devto_profile_response.status_code != 200:
+       log.info(f"Got a {devto_profile_response.status_code} response from Dev.to.\n
+       Reason: devto_profile_response.reason")
+       abort()
 
     devs = code.json()
 
