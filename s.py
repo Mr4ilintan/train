@@ -97,8 +97,6 @@ def parse_devto_profiles(partial_developers: List[Everyone]):
                 keys.append(tag.text.strip().replace("\n", ""))
             elif tag.get("class") == ["value"]:
                 values.append(tag.text.strip().replace("\n", ""))
-        #print(keys)
-        #print(values)
 
         socials = soup.find_all('a',{'target' : ['_blank']})
 
