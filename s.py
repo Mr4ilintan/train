@@ -5,7 +5,9 @@ from typing import Optional, List, Union, Dict
 import requests
 from bs4 import BeautifulSoup
 
-
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 @dataclass
 class Everyone:
     id: int
