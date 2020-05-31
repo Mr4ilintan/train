@@ -101,33 +101,21 @@ def parse_devto_profiles(partial_developers: List[Everyone]):
         for a in socials:
             links.append(a['href'])
 
-        for link_in in links:
-            if link_in.startswith("https://www.linkedin.com"):
-                social_info['linked_in'] = link_in
-
-        for link_git in links:
-            if link_git.startswith('https://github.com'):
-                social_info['github'] = link_git
-
-        for link_twitter in links:
-            if link_twitter.startswith('https://twitter.com'):
-                social_info['twitter'] = link_twitter
-
-        for link_stack in links:
-            if link_stack.startswith('https://stackoverflow.com'):
-                social_info['stack'] = link_stack
-
-        for link_fb in links:
-            if link_fb.startswith('https://www.facebook.com'):
-                social_info['facebook'] = link_fb
-
-        for link_inst in links:
-            if link_inst.startswith('https://www.instagram.com'):
-                social_info['instagram'] = link_inst
-        #print(f"LINKEDIN: {social_info.get('linked_in')}")
-        for link_yt in links:
-            if link_yt.startswith('http://youtube.com'):
-                social_info['youtube'] = link_yt
+        for link in links:
+            if link.startswith("https://www.linkedin.com"):
+                social_info['linked_in'] = link
+            elif link.startswith('https://github.com'):
+                social_info['github'] = link
+            elif link.startswith('https://twitter.com'):
+                social_info['twitter'] = link
+            elif link.startswith('https://stackoverflow.com'):
+                social_info['stack'] = link
+            elif link.startswith('https://www.facebook.com'):
+                social_info['facebook'] = link
+            elif link.startswith('https://www.instagram.com'):
+                social_info['instagram'] = link
+            elif link.startswith('http://youtube.com'):
+                social_info['youtube'] = link
 
         developer.email = social_info.get('email', '')
         developer.work = social_info.get('work', '')
@@ -226,4 +214,3 @@ if __name__ == '__main__':
     create_header()
     partial_profiles: List[Everyone] = get_profile_url()
     parse_devto_profiles(partial_profiles)
-
