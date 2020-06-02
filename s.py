@@ -1,13 +1,18 @@
 import csv
+import time
 from dataclasses import dataclass
+from os import abort
 from typing import Optional, List, Union, Dict
 
 import requests
 from bs4 import BeautifulSoup
 
 import logging
+
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
+
+
 @dataclass
 class Everyone:
     id: int
@@ -31,27 +36,36 @@ class Everyone:
     work_status: Optional[str]
 
 
-def get_profile_url() -> List[Everyone]:
+def get_profile_url(current_id: int) -> Optional[Everyone]:
 
-    devto_profile_response = requests.get(f"https://dev.to/api/users/1")
-    
-    if devto_profile_response.status_code != 200:
-       log.info(f"Got a {devto_profile_response.status_code} response from Dev.to.\n
-       Reason: devto_profile_response.reason")
-       abort()
+    devto_profile_response = requests.get(f"https://dev.to/api/users/{current_id}")
 
-    devs = code.json()
+    accepted_status_codes = [200, 404]
 
-    partial_dev_data: List[Everyone] = []
+    if devto_profile_response.status_code not in accepted_status_codes:
+        log.info(
+            f"Got a {devto_profile_response.status_code} response from Dev.to.\nReason: devto_profile_response.reason"
+        )
+        abort()
 
-    id: int = devs.get("id")
-    username: str = devs.get("username")
-    name: str = devs.get("name")
-    twitter_username: str = devs.get("twitter_username")
-    github_username: str = devs.get("github_username")
-    location: str = devs.get("location")
-    joined_at: Union[str, int] = devs.get("joined_at")
-    profile_url: str = f"https://dev.to/{username}"
+    if devto_profile_response.status_code == 404:
+        return  # Skip this dev
+
+    dev_json = devto_profile_response.json()
+
+    id: int = dev_json.get("id", "")
+    username: str = dev_json.get("username", "")
+    name: str = dev_json.get("name", "")
+    twitter_username: str = dev_json.get("twitter_username", "")
+    github_username: str = dev_json.get("github_username", "")
+    location: str = dev_json.get("location", "")
+    joined_at: Union[str, int] = dev_json.get("joined_at", "")
+
+    if username:
+        profile_url: str = f"https://dev.to/{username}"
+    else:
+        log.info("No username")
+        abort()
 
     dev_to_be_parsed: Everyone = Everyone(
         id=id,
@@ -74,74 +88,76 @@ def get_profile_url() -> List[Everyone]:
         education="",
         work_status="",
     )
-    if username:
-        partial_dev_data.append(dev_to_be_parsed)
 
-    #print(partial_dev_data)
-
-    return partial_dev_data
+    return dev_to_be_parsed
 
 
+def parse_devto_profile(partial_developer: Optional[Everyone]):
 
-def parse_devto_profiles(partial_developers: List[Everyone]):
-    everyone = get_profile_url()
-    for developer in partial_developers:
-        profile_page = requests.get(everyone[0].profile_url)
-        soup = BeautifulSoup(profile_page.text, 'lxml')
+    if partial_developer is None:  # In case developer is missing aka 404
+        return
 
-        meta = soup.find_all('div',{'class': ['key', 'value']})
-        keys: List[str] = []
-        values: List[str] = []
-        for tag in meta:
-            if tag.get("class") == ["key"]:
-                keys.append(tag.text.strip().replace("\n", ""))
-            elif tag.get("class") == ["value"]:
-                values.append(tag.text.strip().replace("\n", ""))
+    profile_page = requests.get(partial_developer.profile_url)
 
-        socials = soup.find_all('a',{'target' : ['_blank']})
+    if profile_page.status_code != 200:
+        log.info(f"Couldn't load profile page: {profile_page.status_code}")
+        log.info(f"Reason: {profile_page.reason}")
+        abort()
 
-        social_info: Dict[str, str] = dict(zip(keys, values))
+    soup = BeautifulSoup(profile_page.text, "lxml")
 
-        links: List[str] = []
-        for a in socials:
-            links.append(a['href'])
+    meta = soup.find_all("div", {"class": ["key", "value"]})
+    keys: List[str] = []
+    values: List[str] = []
+    for tag in meta:
+        if tag.get("class") == ["key"]:
+            keys.append(tag.text.strip().replace("\n", ""))
+        elif tag.get("class") == ["value"]:
+            values.append(tag.text.strip().replace("\n", ""))
 
-        for link in links:
-            if link.startswith("https://www.linkedin.com"):
-                social_info['linked_in'] = link
-            elif link.startswith('https://github.com'):
-                social_info['github'] = link
-            elif link.startswith('https://twitter.com'):
-                social_info['twitter'] = link
-            elif link.startswith('https://stackoverflow.com'):
-                social_info['stack'] = link
-            elif link.startswith('https://www.facebook.com'):
-                social_info['facebook'] = link
-            elif link.startswith('https://www.instagram.com'):
-                social_info['instagram'] = link
-            elif link.startswith('http://youtube.com'):
-                social_info['youtube'] = link
+    socials = soup.find_all("a", {"target": ["_blank"]})
 
-        developer.email = social_info.get('email', '')
-        developer.work = social_info.get('work', '')
-        developer.education = social_info.get('education', '')
-        developer.linked_in = social_info.get('linked_in', '')
-        developer.twitter_url = social_info.get('twitter_url', '')
-        developer.work_status = social_info.get('work_status','')
-        developer.github_url = social_info.get('github_url','')
-        developer.stackOverflow = social_info.get('stackOverflow','')
-        developer.instagram = social_info.get('instagram','')
-        developer.facebook = social_info.get('facebook','')
-        developer.youtube = social_info.get('youtube','')
+    social_info: Dict[str, str] = dict(zip(keys, values))
 
+    links: List[str] = []
+    for a in socials:
+        links.append(a["href"])
 
+    for link in links:
+        if link.startswith("https://www.linkedin.com"):
+            social_info["linked_in"] = link
+        elif link.startswith("https://github.com"):
+            social_info["github"] = link
+        elif link.startswith("https://twitter.com"):
+            social_info["twitter"] = link
+        elif link.startswith("https://stackoverflow.com"):
+            social_info["stack"] = link
+        elif link.startswith("https://www.facebook.com"):
+            social_info["facebook"] = link
+        elif link.startswith("https://www.instagram.com"):
+            social_info["instagram"] = link
+        elif link.startswith("http://youtube.com"):
+            social_info["youtube"] = link
 
-        save_dev_to_csv(entity=developer)
+    partial_developer.email = social_info.get("email", "")
+    partial_developer.work = social_info.get("work", "")
+    partial_developer.education = social_info.get("education", "")
+    partial_developer.linked_in = social_info.get("linked_in", "")
+    partial_developer.twitter_url = social_info.get("twitter_url", "")
+    partial_developer.work_status = social_info.get("work_status", "")
+    partial_developer.github_url = social_info.get("github_url", "")
+    partial_developer.stackOverflow = social_info.get("stackOverflow", "")
+    partial_developer.instagram = social_info.get("instagram", "")
+    partial_developer.facebook = social_info.get("facebook", "")
+    partial_developer.youtube = social_info.get("youtube", "")
+
+    save_dev_to_csv(entity=partial_developer)
 
 
 def save_dev_to_csv(entity: Everyone):
     with open("everyone_devto_profiles.csv", "a", newline="") as csvfile:
         fieldnames = [
+            "id",
             "email",
             "name",
             "username",
@@ -155,7 +171,6 @@ def save_dev_to_csv(entity: Everyone):
             "github_username",
             "github_url",
             "profile_url",
-            "id",
             "linked_in",
             "stackOverflow",
             "instagram",
@@ -192,6 +207,7 @@ def save_dev_to_csv(entity: Everyone):
 def create_header():
     with open("everyone_devto_profiles.csv", "w", newline="") as csvfile:
         fieldnames = [
+            "id",
             "email",
             "name",
             "username",
@@ -205,7 +221,6 @@ def create_header():
             "github_username",
             "github_url",
             "profile_url",
-            "id",
             "linked_in",
             "stackOverflow",
             "instagram",
@@ -215,7 +230,14 @@ def create_header():
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-if __name__ == '__main__':
-    create_header()
-    partial_profiles: List[Everyone] = get_profile_url()
-    parse_devto_profiles(partial_profiles)
+
+if __name__ == "__main__":
+
+    for i in range(9704, 400000):
+        partial_profile: Everyone = get_profile_url(i)
+
+        log.info(f"LAST ID: {i}")
+
+        time.sleep(1)
+
+        parse_devto_profile(partial_profile)

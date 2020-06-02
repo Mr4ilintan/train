@@ -1,38 +1,32 @@
 import csv
-from dataclasses import dataclass
-from typing import List, Dict, Optional, Union
+from typing import List, Dict
 from bs4 import BeautifulSoup  # type: ignore
 import requests
-
-
-@dataclass
-class Developer:
-    email: Optional[str]
-    work: Optional[str]
-    location: Optional[str]
-    education: Optional[str]
-    joined: Optional[Union[str, int]]
-    work_status: Optional[str]
-    full_name: Optional[str]
-    username: Optional[str]
-    github_username: Optional[str]
-    profile_url: str
-    # id: Optional[int]
+from model.developer import Developer
 
 
 def save_dev_to_csv(entity: Developer):
     with open("devto_profiles.csv", "a", newline="") as csvfile:
         fieldnames = [
+            "id",
+            "profile_url",
+            "username",
+            "name",
+            "github_username",
+            "twitter_username",
+            "location",
+            "joined_at",
+            "linked_in",
             "email",
             "work",
-            "location",
+            "stackOverflow",
+            "instagram",
+            "facebook",
+            "youtube",
             "education",
-            "joined",
+            "github_url",
+            "twitter_url",
             "work_status",
-            "full_name",
-            "github_username",
-            "profile_url",
-            # "id"
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
