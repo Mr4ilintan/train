@@ -99,7 +99,9 @@ def parse_devto_profile(partial_developer: Optional[Everyone]):
 
     profile_page = requests.get(partial_developer.profile_url)
 
-    if profile_page.status_code != 200:
+    allowed_codes = [200, 404]
+
+    if profile_page.status_code not in allowed_codes:
         log.info(f"Couldn't load profile page: {profile_page.status_code}")
         log.info(f"Reason: {profile_page.reason}")
         abort()
